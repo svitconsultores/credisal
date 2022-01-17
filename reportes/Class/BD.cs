@@ -19,6 +19,7 @@ namespace reportes
 
         public bool Open()
         {
+            //test
             try
             {
                 strProvider = "server=" + host + ";Database=" + database + ";User ID=" + userDB + ";Password=" + password;
