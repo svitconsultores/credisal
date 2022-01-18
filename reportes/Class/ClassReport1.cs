@@ -81,6 +81,60 @@ namespace reportes.Class
 
         }
 
+        public void GetDataButton(int mes, int anio)
+        {
+            try
+            {
+
+                con.Open();
+
+                string query = "select CODIGOPRE as CODIGO, (select mIN(SALDO) " +
+                "from movpres m2 where CODIGOPRE = m.CODIGOPRE AND TIPO != 1 and month(FECHA) = " + Convert.ToInt32(mes) + " - 1 ) " +
+                "as SALDO_ANTERIOR,        " +
+                "min(SALDO) as SALDO_ACTUAL,       " +
+                "SUM(P110401) " +
+                "as CAPITAL,       " +
+                "SUM(INT_APLIC) " +
+                "as INTERES,       " +
+                "SUM(MANEJO) " +
+                "as MANEJO, " +
+                "CONCAT(m3.NOMBRE, ' ', m3.APELLIDO) as NAMECLIENT " +
+                "from movpres m " +
+                "inner join maeasoc m3 on m3.CODIGO = substring(m.CODIGOPRE, 1, 7) " +
+                "where TIPO != 1 and month(FECHA) = " + Convert.ToInt32(mes) + " and COMPROBANT != 1 AND YEAR(FECHA) = " + Convert.ToInt32(anio) + " GROUP by CODIGOPRE";
+
+
+                MySqlDataReader row;
+                row = con.ExecuteReader(query);
+
+
+                if (row.HasRows)
+                {
+                    while (row.Read())
+                    {
+                        ListCodigo.Add(row["CODIGO"].ToString());
+                        ListSaldoAnterior.Add(row["SALDO_ANTERIOR"].ToString());
+                        ListSaldoActual.Add(row["SALDO_ACTUAL"].ToString());
+                        ListCapital.Add(row["CAPITAL"].ToString());
+                        ListInteres.Add(row["INTERES"].ToString());
+                        ListManejo.Add(row["MANEJO"].ToString());
+                        ListClientes.Add(row["NAMECLIENT"].ToString());
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Data not found");
+                }
+
+                con.Close();
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.ToString());
+            }
+
+        }
+
         public void updateDatagrid(DataGridView NameGrid)
         {
             NameGrid.Rows.Clear();
@@ -112,11 +166,7 @@ namespace reportes.Class
             {
                 MessageBox.Show(err.ToString());
             }
-
-
-           
-
-            
+  
         }
 
     }
