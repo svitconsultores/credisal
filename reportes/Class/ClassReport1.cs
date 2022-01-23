@@ -8,6 +8,12 @@ using System.Text;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using System.Collections;
+using SpreadsheetLight;
+//import PDF
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using iTextSharp;
+using System.IO;
 
 namespace reportes.Class
 {
@@ -21,6 +27,10 @@ namespace reportes.Class
         private static ArrayList ListInteres = new ArrayList();
         private static ArrayList ListManejo = new ArrayList();
         private static ArrayList ListClientes = new ArrayList();
+        private static ArrayList ListFecha = new ArrayList();
+
+        SLDocument sl = new SLDocument();
+        DataGridView grid = new DataGridView();
         public class Movpres
         {
             
@@ -83,6 +93,7 @@ namespace reportes.Class
 
         public void GetDataButton(int mes, int anio)
         {
+
             try
             {
 
@@ -98,6 +109,7 @@ namespace reportes.Class
                 "as INTERES,       " +
                 "SUM(MANEJO) " +
                 "as MANEJO, " +
+                "fecha, " +
                 "CONCAT(m3.NOMBRE, ' ', m3.APELLIDO) as NAMECLIENT " +
                 "from movpres m " +
                 "inner join maeasoc m3 on m3.CODIGO = substring(m.CODIGOPRE, 1, 7) " +
@@ -119,6 +131,7 @@ namespace reportes.Class
                         ListInteres.Add(row["INTERES"].ToString());
                         ListManejo.Add(row["MANEJO"].ToString());
                         ListClientes.Add(row["NAMECLIENT"].ToString());
+                        ListFecha.Add(row["fecha"].ToString());
                     }
                 }
                 else
@@ -154,6 +167,7 @@ namespace reportes.Class
                         newRow.Cells[4].Value = ListInteres[i];
                         newRow.Cells[5].Value = ListManejo[i];
                         newRow.Cells[6].Value = ListClientes[i];
+                        newRow.Cells[7].Value = ListFecha[i];
                         NameGrid.Rows.Add(newRow);
                     }
                 }
@@ -161,14 +175,153 @@ namespace reportes.Class
                 {
                     MessageBox.Show("Data not found");
                 }
+                ListCodigo.Clear();
+                ListSaldoAnterior.Clear();
+                ListSaldoActual.Clear();
+                ListCapital.Clear();
+                ListInteres.Clear();
+                ListManejo.Clear();
+                ListClientes.Clear();
+                ListFecha.Clear();
             }
+
             catch (Exception err)
             {
                 MessageBox.Show(err.ToString());
             }
   
         }
+        
+        public void exportExcel(DataGridView Grid)
+        {
+            
+            int iC = 2;
+            foreach(DataGridViewColumn column in Grid.Columns)
+            {
+                sl.SetCellValue(3, iC, column.HeaderText.ToString());
+                iC++;
+            }
 
+            int iR = 4;
+
+            foreach(DataGridViewRow row in Grid.Rows)
+            {
+                
+                sl.SetCellValue(iR, 2, row.Cells[0].Value?.ToString());
+                sl.SetCellValue(iR, 3, row.Cells[1].Value?.ToString());
+                sl.SetCellValue(iR, 4, row.Cells[2].Value?.ToString());
+                sl.SetCellValue(iR, 5, row.Cells[3].Value?.ToString());
+                sl.SetCellValue(iR, 6, row.Cells[4].Value?.ToString());
+                sl.SetCellValue(iR, 7, row.Cells[5].Value?.ToString());
+                sl.SetCellValue(iR, 8, row.Cells[6].Value?.ToString());
+                sl.SetCellValue(iR, 9, row.Cells[7].Value?.ToString());
+                iR++;                    
+            }
+
+            SaveFileDialog save = new SaveFileDialog();
+            save.FileName = "Reporte_General_" + DateTime.Now.ToString("ddMMyyyyHHmmss") + ".xlsx";
+            save.Title = "Guardar Archivo";
+            save.CheckPathExists = true;
+            save.DefaultExt = "xlsx";
+
+            if(save.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    sl.SaveAs(save.FileName);
+                    MessageBox.Show("Archivo Exportado con Exito!");
+                } 
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        public void exportPDF(DataGridView grid)
+        {
+
+            SaveFileDialog save = new SaveFileDialog();
+            save.Filter = "PDF Files|*.pdf";
+            //save.FilterIndex = 0;
+            string name = "Reporte_General_" + DateTime.Now.ToString("ddMMyyyyHHmmss") + ".pdf"; 
+           // save.CheckPathExists = true;
+
+            if (save.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {                    
+                    save.FileName = name;
+                    Document doc = new Document(PageSize.LETTER.Rotate());
+                    PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(@"C:\Users\admin\Desktop\prueba.pdf", FileMode.Create));
+
+                    doc.AddTitle("Credisal");
+                    doc.AddCreator("Credisal");
+                    doc.Open();
+
+                    //encabezado del doc
+                    iTextSharp.text.Font font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+                    doc.Add(new Paragraph("Credisal"));
+                    doc.Add(new Paragraph("Reporte General"));
+                    doc.Add(Chunk.NEWLINE);
+                    //encabezado de la tabla
+
+                    PdfPTable table = new PdfPTable(8);
+                    table.DefaultCell.Padding = 3;
+                    table.WidthPercentage = 100;
+                    table.TotalWidth = 260;
+                    float[] widths = new float[] { 30f, 20f, 20f, 20f, 20f, 20f, 100f, 30f};
+                    table.SetWidths(widths);
+
+                    //titulo del encabezado de la tabla
+                    foreach (DataGridViewColumn column in grid.Columns)
+                    {
+
+                        PdfPCell headerName = new PdfPCell(new Phrase(column.HeaderText.ToString(), font));
+                        headerName.BorderWidth = 0;
+                        headerName.BorderWidthBottom = 0.75f;
+                        table.AddCell(headerName);
+                    }
+
+                    //recorremos el grid y llenamos la tabla con los valores obtenidos
+
+                    foreach (DataGridViewRow row in grid.Rows)
+                    {
+                        PdfPCell data1 = new PdfPCell(new Phrase(row.Cells[0].Value?.ToString()));
+                        table.AddCell(data1);
+                        PdfPCell data2 = new PdfPCell(new Phrase(row.Cells[1].Value?.ToString()));
+                        table.DefaultCell.Padding = 2;
+                        table.AddCell(data2);
+                        PdfPCell data3 = new PdfPCell(new Phrase(row.Cells[2].Value?.ToString()));
+                        data3.Colspan = 1;
+                        table.AddCell(data3);
+                        PdfPCell data4 = new PdfPCell(new Phrase(row.Cells[3].Value?.ToString()));
+                        table.AddCell(data4);
+                        PdfPCell data5 = new PdfPCell(new Phrase(row.Cells[4].Value?.ToString()));
+                        table.AddCell(data5);
+                        PdfPCell data6 = new PdfPCell(new Phrase(row.Cells[5].Value?.ToString()));
+                        table.AddCell(data6);
+                        PdfPCell data7 = new PdfPCell(new Phrase(row.Cells[6].Value?.ToString()));
+                        table.AddCell(data7);
+                        PdfPCell data8 = new PdfPCell(new Phrase(row.Cells[7].Value?.ToString()));
+                        table.AddCell(data8);
+                    }
+
+                    doc.Add(table);
+
+
+                    doc.Close();
+                    MessageBox.Show("Archivo Exportado con Exito!");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+           
+           // writer.Close();
+
+        }
     }
 }
 
