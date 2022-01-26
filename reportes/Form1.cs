@@ -25,7 +25,10 @@ namespace reportes
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            c.GetDataButton(10, 2017);
+            // c.GetDataButton(10, 2017);
+            btnBuscar.Enabled = false;
+            btnExcel.Enabled = false;
+            btnPdf.Enabled = false;
         }
 
         private void btnBuscar_Click(object sender, EventArgs e)
@@ -55,6 +58,23 @@ namespace reportes
         private void btnPdf_Click(object sender, EventArgs e)
         {
             c.exportPDF(dgvReport1);
+        }
+
+        private void Form1_Activated(object sender, EventArgs e)
+        {
+            if(cbbanio.Text == "Añ:" && cbbMes.Text == "Mes:")
+            {
+                btnBuscar.Enabled = true;
+                btnExcel.Enabled = false;
+                btnPdf.Enabled = false;
+            }
+            else
+            {
+                btnBuscar.Enabled = true;
+                btnExcel.Enabled = true;
+                btnPdf.Enabled = true;
+
+            }
         }
     }
 }

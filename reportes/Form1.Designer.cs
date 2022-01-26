@@ -56,6 +56,9 @@ namespace reportes
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.MenuBar;
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.DarkSlateBlue;
             this.dgvReport1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            this.dgvReport1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.DarkSlateBlue;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
@@ -76,6 +79,7 @@ namespace reportes
             this.fecha});
             this.dgvReport1.Location = new System.Drawing.Point(12, 123);
             this.dgvReport1.Name = "dgvReport1";
+            this.dgvReport1.ReadOnly = true;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.Color.DarkSlateBlue;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
@@ -88,63 +92,76 @@ namespace reportes
             dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.DarkSlateBlue;
             this.dgvReport1.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.dgvReport1.RowTemplate.Height = 33;
-            this.dgvReport1.Size = new System.Drawing.Size(1322, 489);
+            this.dgvReport1.Size = new System.Drawing.Size(1328, 489);
             this.dgvReport1.TabIndex = 0;
             // 
             // CODIGO
             // 
+            this.CODIGO.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
             this.CODIGO.HeaderText = "Codigo";
             this.CODIGO.MinimumWidth = 8;
             this.CODIGO.Name = "CODIGO";
-            this.CODIGO.Width = 150;
+            this.CODIGO.ReadOnly = true;
+            this.CODIGO.Width = 107;
             // 
             // SALDOANTERIOR
             // 
+            this.SALDOANTERIOR.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.SALDOANTERIOR.HeaderText = "Saldo Anterior";
             this.SALDOANTERIOR.MinimumWidth = 8;
             this.SALDOANTERIOR.Name = "SALDOANTERIOR";
-            this.SALDOANTERIOR.Width = 150;
+            this.SALDOANTERIOR.ReadOnly = true;
             // 
             // SALDOACTUAL
             // 
+            this.SALDOACTUAL.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.SALDOACTUAL.HeaderText = "Saldo Actual";
             this.SALDOACTUAL.MinimumWidth = 8;
             this.SALDOACTUAL.Name = "SALDOACTUAL";
-            this.SALDOACTUAL.Width = 150;
+            this.SALDOACTUAL.ReadOnly = true;
             // 
             // CAPITAL
             // 
+            this.CAPITAL.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
             this.CAPITAL.HeaderText = "Capital";
             this.CAPITAL.MinimumWidth = 8;
             this.CAPITAL.Name = "CAPITAL";
-            this.CAPITAL.Width = 150;
+            this.CAPITAL.ReadOnly = true;
+            this.CAPITAL.Width = 102;
             // 
             // INTERES
             // 
+            this.INTERES.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
             this.INTERES.HeaderText = "Interes";
             this.INTERES.MinimumWidth = 8;
             this.INTERES.Name = "INTERES";
-            this.INTERES.Width = 150;
+            this.INTERES.ReadOnly = true;
+            this.INTERES.Width = 101;
             // 
             // MANEJO
             // 
+            this.MANEJO.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
             this.MANEJO.HeaderText = "Manejo";
             this.MANEJO.MinimumWidth = 8;
             this.MANEJO.Name = "MANEJO";
-            this.MANEJO.Width = 150;
+            this.MANEJO.ReadOnly = true;
+            this.MANEJO.Width = 107;
             // 
             // CLIENTES
             // 
+            this.CLIENTES.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
             this.CLIENTES.HeaderText = "Cliente";
-            this.CLIENTES.MinimumWidth = 8;
+            this.CLIENTES.MinimumWidth = 20;
             this.CLIENTES.Name = "CLIENTES";
-            this.CLIENTES.Width = 150;
+            this.CLIENTES.ReadOnly = true;
+            this.CLIENTES.Width = 101;
             // 
             // fecha
             // 
             this.fecha.HeaderText = "Fecha";
             this.fecha.MinimumWidth = 8;
             this.fecha.Name = "fecha";
+            this.fecha.ReadOnly = true;
             this.fecha.Width = 150;
             // 
             // cbbMes
@@ -230,7 +247,12 @@ namespace reportes
             this.Controls.Add(this.cbbanio);
             this.Controls.Add(this.cbbMes);
             this.Controls.Add(this.dgvReport1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Reporte General - Credisal";
+            this.Activated += new System.EventHandler(this.Form1_Activated);
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvReport1)).EndInit();
             this.ResumeLayout(false);
@@ -240,6 +262,11 @@ namespace reportes
         #endregion
 
         private System.Windows.Forms.DataGridView dgvReport1;
+        private System.Windows.Forms.ComboBox cbbMes;
+        private System.Windows.Forms.ComboBox cbbanio;
+        private System.Windows.Forms.Button btnBuscar;
+        private System.Windows.Forms.Button btnExcel;
+        private System.Windows.Forms.Button btnPdf;
         private System.Windows.Forms.DataGridViewTextBoxColumn CODIGO;
         private System.Windows.Forms.DataGridViewTextBoxColumn SALDOANTERIOR;
         private System.Windows.Forms.DataGridViewTextBoxColumn SALDOACTUAL;
@@ -247,12 +274,7 @@ namespace reportes
         private System.Windows.Forms.DataGridViewTextBoxColumn INTERES;
         private System.Windows.Forms.DataGridViewTextBoxColumn MANEJO;
         private System.Windows.Forms.DataGridViewTextBoxColumn CLIENTES;
-        private System.Windows.Forms.ComboBox cbbMes;
-        private System.Windows.Forms.ComboBox cbbanio;
-        private System.Windows.Forms.Button btnBuscar;
         private System.Windows.Forms.DataGridViewTextBoxColumn fecha;
-        private System.Windows.Forms.Button btnExcel;
-        private System.Windows.Forms.Button btnPdf;
     }
 }
 
