@@ -161,11 +161,11 @@ namespace reportes.Class
 
                         newRow.CreateCells(NameGrid);
                         newRow.Cells[0].Value = ListCodigo[i];
-                        newRow.Cells[1].Value = ListSaldoAnterior[i];
-                        newRow.Cells[2].Value = ListSaldoActual[i];
-                        newRow.Cells[3].Value = ListCapital[i];
-                        newRow.Cells[4].Value = ListInteres[i];
-                        newRow.Cells[5].Value = ListManejo[i];
+                        newRow.Cells[1].Value = "$ " + ListSaldoAnterior[i];
+                        newRow.Cells[2].Value = "$ " + ListSaldoActual[i];
+                        newRow.Cells[3].Value = "$ " + ListCapital[i];
+                        newRow.Cells[4].Value = "$ " + ListInteres[i];
+                        newRow.Cells[5].Value = "$ " + ListManejo[i];
                         newRow.Cells[6].Value = ListClientes[i];
                         newRow.Cells[7].Value = ListFecha[i];
                         NameGrid.Rows.Add(newRow);
@@ -244,72 +244,77 @@ namespace reportes.Class
             SaveFileDialog save = new SaveFileDialog();
             save.Filter = "PDF Files|*.pdf";
             //save.FilterIndex = 0;
-            string name = "Reporte_General_" + DateTime.Now.ToString("ddMMyyyyHHmmss") + ".pdf"; 
-           // save.CheckPathExists = true;
+            string name = "Reporte_General_" + DateTime.Now.ToString("ddMMyyyyHHmmss") + ".pdf";
+            save.FileName = name;
+            Document doc = new Document(PageSize.LETTER.Rotate());
+
+            iTextSharp.text.Font font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
+
+           
+            // save.CheckPathExists = true;
+
+            //encabezado de la tabla
+
+            PdfPTable table = new PdfPTable(8);
+            table.DefaultCell.Padding = 3;
+            table.WidthPercentage = 100;
+            table.TotalWidth = 260;
+            float[] widths = new float[] { 30f, 20f, 20f, 20f, 20f, 20f, 100f, 30f };
+            table.SetWidths(widths);
+
+            //titulo del encabezado de la tabla
+            foreach (DataGridViewColumn column in grid.Columns)
+            {
+
+                PdfPCell headerName = new PdfPCell(new Phrase(column.HeaderText.ToString(), font));
+                headerName.BorderWidth = 0;
+                headerName.BorderWidthBottom = 0.75f;
+                table.AddCell(headerName);
+            }
+
+            //recorremos el grid y llenamos la tabla con los valores obtenidos
+
+            foreach (DataGridViewRow row in grid.Rows)
+            {
+                PdfPCell data1 = new PdfPCell(new Phrase(row.Cells[0].Value?.ToString()));
+                table.AddCell(data1);
+                PdfPCell data2 = new PdfPCell(new Phrase(row.Cells[1].Value?.ToString()));
+                table.DefaultCell.Padding = 2;
+                table.AddCell(data2);
+                PdfPCell data3 = new PdfPCell(new Phrase(row.Cells[2].Value?.ToString()));
+                data3.Colspan = 1;
+                table.AddCell(data3);
+                PdfPCell data4 = new PdfPCell(new Phrase(row.Cells[3].Value?.ToString()));
+                table.AddCell(data4);
+                PdfPCell data5 = new PdfPCell(new Phrase(row.Cells[4].Value?.ToString()));
+                table.AddCell(data5);
+                PdfPCell data6 = new PdfPCell(new Phrase(row.Cells[5].Value?.ToString()));
+                table.AddCell(data6);
+                PdfPCell data7 = new PdfPCell(new Phrase(row.Cells[6].Value?.ToString()));
+                table.AddCell(data7);
+                PdfPCell data8 = new PdfPCell(new Phrase(row.Cells[7].Value?.ToString()));
+                table.AddCell(data8);
+            }
+            
 
             if (save.ShowDialog() == DialogResult.OK)
             {
                 try
-                {                    
-                    save.FileName = name;
-                    Document doc = new Document(PageSize.LETTER.Rotate());
-                    PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(@"C:\Users\admin\Desktop\prueba.pdf", FileMode.Create));
+                {
+                    FileStream stream = new FileStream(save.FileName + ".pdf", FileMode.Create);
 
+                    PdfWriter writer = PdfWriter.GetInstance(doc, stream);
+
+                    //PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(@"C:\Users\admin\Desktop\prueba.pdf", FileMode.Create));
                     doc.AddTitle("Credisal");
                     doc.AddCreator("Credisal");
                     doc.Open();
 
                     //encabezado del doc
-                    iTextSharp.text.Font font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.BOLD, BaseColor.BLACK);
                     doc.Add(new Paragraph("Credisal"));
                     doc.Add(new Paragraph("Reporte General"));
                     doc.Add(Chunk.NEWLINE);
-                    //encabezado de la tabla
-
-                    PdfPTable table = new PdfPTable(8);
-                    table.DefaultCell.Padding = 3;
-                    table.WidthPercentage = 100;
-                    table.TotalWidth = 260;
-                    float[] widths = new float[] { 30f, 20f, 20f, 20f, 20f, 20f, 100f, 30f};
-                    table.SetWidths(widths);
-
-                    //titulo del encabezado de la tabla
-                    foreach (DataGridViewColumn column in grid.Columns)
-                    {
-
-                        PdfPCell headerName = new PdfPCell(new Phrase(column.HeaderText.ToString(), font));
-                        headerName.BorderWidth = 0;
-                        headerName.BorderWidthBottom = 0.75f;
-                        table.AddCell(headerName);
-                    }
-
-                    //recorremos el grid y llenamos la tabla con los valores obtenidos
-
-                    foreach (DataGridViewRow row in grid.Rows)
-                    {
-                        PdfPCell data1 = new PdfPCell(new Phrase(row.Cells[0].Value?.ToString()));
-                        table.AddCell(data1);
-                        PdfPCell data2 = new PdfPCell(new Phrase(row.Cells[1].Value?.ToString()));
-                        table.DefaultCell.Padding = 2;
-                        table.AddCell(data2);
-                        PdfPCell data3 = new PdfPCell(new Phrase(row.Cells[2].Value?.ToString()));
-                        data3.Colspan = 1;
-                        table.AddCell(data3);
-                        PdfPCell data4 = new PdfPCell(new Phrase(row.Cells[3].Value?.ToString()));
-                        table.AddCell(data4);
-                        PdfPCell data5 = new PdfPCell(new Phrase(row.Cells[4].Value?.ToString()));
-                        table.AddCell(data5);
-                        PdfPCell data6 = new PdfPCell(new Phrase(row.Cells[5].Value?.ToString()));
-                        table.AddCell(data6);
-                        PdfPCell data7 = new PdfPCell(new Phrase(row.Cells[6].Value?.ToString()));
-                        table.AddCell(data7);
-                        PdfPCell data8 = new PdfPCell(new Phrase(row.Cells[7].Value?.ToString()));
-                        table.AddCell(data8);
-                    }
-
                     doc.Add(table);
-
-
                     doc.Close();
                     MessageBox.Show("Archivo Exportado con Exito!");
                 }
